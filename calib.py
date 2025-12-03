@@ -1,4 +1,4 @@
-import adc_mcp
+import mcp_3021_adc as adc_mcp
 from datetime import datetime
 from time import time
 import matplotlib.pyplot as plt
@@ -13,7 +13,7 @@ comp_time = 0.1
 if __name__ == "__main__":
     adc = adc_mcp.MCP3021(dynamic_range, comp_time)
     try:
-        s = input("Введите уровень воды в см")
+        s = "10.5"
         dt = datetime.now()
         print("- Wave Lab")
         print("- Date: ", dt)
@@ -26,17 +26,15 @@ if __name__ == "__main__":
                 file.write("- Date: "+ str(dt)+"\n")
                 file.write(s+"см\n")
                 t0 = time()
-                for i in range(10/comp_time):
-                    mes = adc.read
-                    tc = time()
+                for i in range(int(10/comp_time)):
+                    mes = adc.read()
                     t1 = time()
-                    adc.append(mes)
+                    adc_arr.append(mes)
                     t.append(t1)
                     ans = str(mes)+";"+str(t1 - t0) +"\n"
                     print(ans)
-                    file.write(ans) 
-                    print(time() - tc)    
-        plt.plot(adc, t, "blue", linewidth=2, marker='o', markersize=2, label=f'{s} см')
+                    file.write(ans)  
+        plt.plot(adc_arr, t, "blue", linewidth=2, marker='o', markersize=2, label=f'{s} см')
 
         # Настраиваем оси и заголовок
         plt.xlabel('время, мс', fontsize=14)

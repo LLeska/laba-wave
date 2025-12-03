@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.ticker import AutoMinorLocator
 import numpy as np
-from scipy.interpolate import CubicSpline
+
 
 colors = [
     '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
@@ -18,8 +18,8 @@ for i in range(len(files)):
         adc_ = []
         t_ = []
         lines = [line.rstrip() for line in file]
-        for i in range(3, len(lines)):
-            a, b = map(int, lines[i].split(";"))
+        for j in range(3, len(lines)):
+            a, b = map(float, lines[j].split(";"))
             adc_.append(a)
             t_.append(b)
         adc.append(adc_)
@@ -30,13 +30,11 @@ for i in range(len(files)):
 h = []
 adcs = []
 for i in range(len(files)):
-    adcs.append(sum(adc)/len(adc))
-    h.append(files[i][:-13])
-    plt.plot(adc[i], t[i], colors[i], linewidth=2, marker='o', markersize=2, label=f'{h[i]} см')
+    adcs.append(sum(adc[i])/len(adc[i]))
+    h.append(float(files[i][:-13]))
+    plt.plot(t[i],adc[i], colors[i], linewidth=2, marker='o', markersize=2, label=f'{h[i]} см')
 
-adcs = np.array(adcs)
-h = np.array(h)
-k, b = np.polyfit(adcs, h, deg=1)
+
 # Настраиваем оси и заголовок
 plt.xlabel('время, мс', fontsize=14)
 plt.ylabel('показания ацп', fontsize=14)
@@ -51,13 +49,20 @@ plt.grid(True, which='major', linestyle='-', alpha=0.9, linewidth=0.8)
 plt.grid(True, which='minor', linestyle=':', alpha=0.7, linewidth=0.5)
 plt.legend(loc='best', fontsize=10)
 
+adcs = np.array(adcs)
+h = np.array(h)
+k, b = np.polyfit(adcs, h, deg=1)
+a1 = np.array([0.0, 3.5])
+h1 = k*a1 + b
+
 
 plt.figure(figsize=(6, 6))
-plt.scatter(adcs, h, color='blue')
+plt.plot(a1, h1, colors[0], linewidth=2, marker='o', markersize=2, label=f'{h[0]} см')
+plt.scatter( adcs, h, color='blue')
 # Настраиваем оси и заголовок
-plt.xlabel('высота уровня воды', fontsize=14)
-plt.ylabel('показания ацп', fontsize=14)
-plt.title('Зависимость показаний ацп от высоты уровня воды\nk = {k}, b = {b}', fontsize=12)
+plt.ylabel('высота уровня воды', fontsize=14)
+plt.xlabel('показания ацп', fontsize=14)
+plt.title(f'Зависимость показаний ацп от высоты уровня воды\nk = {k}, b = {b}', fontsize=12)
 ax = plt.gca()
 # Автоматические дополнительные деления (4 промежуточных деления между основными)
 ax.xaxis.set_minor_locator(AutoMinorLocator(5))
